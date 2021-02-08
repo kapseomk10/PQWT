@@ -1,5 +1,8 @@
 import mysql.connector as conn
 from datetime import datetime
+from urllib.request import Request, urlopen
+import certifi
+import ssl
 
 mydb = conn.connect(host="192.168.1.108",user="hello1",passwd="hello1", database="hms", auth_plugin='mysql_native_password')
 
@@ -62,10 +65,6 @@ if myres!=None:
     myresult = mycursor.fetchone()
     print(myresult)
     if myresult!=None:
-        #sql2 = "select status from livetasks where patientID='"+pid+"' and task='"+task+"'"
-        #mycursor.execute(sql2)
-        #myresult = mycursor.fetchone()
-        #print(myresult[0])
         if(myresult[10]=='waiting'):
             live = liveTime()
             wai = diffTime(live,myresult[9])
@@ -73,11 +72,16 @@ if myres!=None:
             print(sql3)
             mycursor.execute(sql3)
             mydb.commit()
+            stat = 'inservice'
+            print("https://hmsprojectdatabase.000webhostapp.com/updateData.php?pid="+pid)
+            urlopen("https://hmsprojectdatabase.000webhostapp.com/updateData.php?pid="+pid, context=ssl.create_default_context(cafile=certifi.where()))
         elif(myresult[10]=="inservice"):
             sql4 = "Delete from livetasks where patientID='"+pid+"'"
             print(sql4)
             mycursor.execute(sql4)
             mydb.commit()
+            print("https://hmsprojectdatabase.000webhostapp.com/removeData.php?pid="+pid)
+            urlopen("https://hmsprojectdatabase.000webhostapp.com/removeData.php?pid="+pid, context=ssl.create_default_context(cafile=certifi.where()))
             #for completedtasks
             arrivalTime = myresult[9]
             endTime = liveTime()
@@ -99,5 +103,9 @@ if myres!=None:
         patientinfo = [(myres[0],myres[1],myres[2],myres[3],task,'1',wto,sto,wto+sto,arrivalTime,'waiting')]
         mycursor.executemany(sqlform,patientinfo)
         mydb.commit()
+        stat = 'waiting'
+        print("https://hmsprojectdatabase.000webhostapp.com/add_data.php?pid="+pid+"&task="+task.replace(' ','')+"&status="+stat+"&wt="+str(wto)+"&st="+str(sto))
+        urlopen("https://hmsprojectdatabase.000webhostapp.com/add_data.php?pid="+pid+"&task="+task.replace(' ','')+"&status="+stat+"&wt="+str(wto)+"&st="+str(sto), context=ssl.create_default_context(cafile=certifi.where()))
 else: 
     print('invalid input')
+    #https://hmsprojectdatabase.000webhostapp.com/add_data.php?pid=1&task=Injection&status=waiting&wt=0&st=14
