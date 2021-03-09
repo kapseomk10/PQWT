@@ -11,10 +11,6 @@ from mfrc522 import SimpleMFRC522
 
 reader = SimpleMFRC522()
 
-account_sid = 'AC1766a4c99191f01313a3c3e5cccd2bc9' 
-auth_token = 'e0d2ee5fc1faffd491cf320590e3001c' 
-client = Client(account_sid, auth_token) 
-
 mydb = conn.connect(host="192.168.1.108",user="hello1",passwd="hello1", database="hms", auth_plugin='mysql_native_password')
 mycursor = mydb.cursor()
 
