@@ -11,9 +11,6 @@ from mfrc522 import SimpleMFRC522
 
 reader = SimpleMFRC522()
 
-mydb = conn.connect(host="192.168.1.108",user="hello1",passwd="hello1", database="hms", auth_plugin='mysql_native_password')
-mycursor = mydb.cursor()
-
 def liveTime():
     now = datetime.now()
     current_time = now.strftime("%H.%M")
@@ -79,12 +76,11 @@ def mqttt():
 	def onion(a):
 			a = str(msg.payload)[2:-1]
 			print(a)
-			#pid,task=tuple(a.split(" "))
 			mycursor = mydb.cursor()
 			sql = "select num from rfid where id='"+a+"'"
 			mycursor.execute(sql)
 			myres = mycursor.fetchone()
-                        pid = list(myres)[0]
+            pid = list(myres)[0]
 			print(pid)
 			task = 3
 			task=taski[int(task)]
@@ -174,11 +170,11 @@ def mqttt():
 
 def rfid():
 	while True:
-                ide, pid = reader.read()
+        ide, pid = reader.read()
 		print('Id: ',ide)
 		print('Text: ',pid)
 		#pid,task=tuple(input().split(" "))
-                task = 3
+        task = 3
 		task=taski[int(task)]
 		mycursor = mydb.cursor()
 		sql = "select * from patient where patientID='"+pid+"'"
